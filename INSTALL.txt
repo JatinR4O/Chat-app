@@ -1,0 +1,126 @@
+Java Chat App - Installation & Quickstart (send this to your friend)
+===============================================================
+
+This file contains everything needed to set up the project on a Windows machine
+and run it from VS Code or a PowerShell terminal.
+
+1) VS Code (IDE) and recommended extensions
+------------------------------------------------
+- Install Visual Studio Code: https://code.visualstudio.com/
+- Recommended VS Code extensions (install these from the Extensions view):
+  - "Extension Pack for Java" (Microsoft) — installs language support, debugger, and tooling
+  - "Language Support for Java(TM) by Red Hat"
+  - "Debugger for Java" (Microsoft)
+  - "Java Test Runner" (optional)
+  - "Maven for Java" or "Gradle for Java" (optional if you use a build tool later)
+  - "GitLens" (optional)
+
+Notes: Installing the "Extension Pack for Java" will pull in the most useful Java extensions.
+
+2) Java Development Kit (JDK)
+------------------------------------------------
+- Install JDK 11 or newer (JDK 17 or 21 recommended). Choose Temurin/Adoptium or Oracle builds.
+  - Temurin: https://adoptium.net/
+  - Oracle: https://www.oracle.com/java/technologies/javase-jdk.html
+
+After installing the JDK, set environment variables (PowerShell commands below):
+
+PowerShell (run as Administrator to set system variables, or run without -Scope to set current user):
+
+    # Replace C:\Path\To\jdk with your actual JDK install path
+    setx JAVA_HOME "C:\\Path\\To\\jdk" -m
+    $env:JAVA_HOME = 'C:\Path\To\jdk'
+    setx PATH "%JAVA_HOME%\\bin;%PATH%" -m
+
+Verify Java installation:
+
+    java -version
+    javac -version
+
+3) MySQL (optional, for DB logging)
+------------------------------------------------
+- Install MySQL server (if you want the server to save chat history in MySQL).
+  - https://dev.mysql.com/downloads/mysql/
+- Create a database (example name: chatdb).
+- Run the SQL file included in the project to create the `chat_history` table:
+
+    # Example: import using mysql client (adjust paths, user, and password)
+    mysql -u root -p chatdb < "D:\\App projects\\Chat App\\java-chat-app\\sql\\create_table.sql"
+
+- MySQL JDBC driver (mysql-connector-java): download the .jar and place it somewhere (for example C:\libs).
+  - https://dev.mysql.com/downloads/connector/j/
+
+To run the Server with MySQL on the classpath:
+
+    cd 'D:\App projects\Chat App\java-chat-app'
+    java -cp ".;C:\\libs\\mysql-connector-java-8.0.xx.jar" Server
+
+Also edit `DBHelper.java` and set DB_URL, DB_USER, DB_PASSWORD to match your DB.
+
+4) Project compile & run (PowerShell commands)
+------------------------------------------------
+From the project folder (the folder that contains the .java files):
+
+    cd 'D:\App projects\Chat App\java-chat-app'
+    javac *.java
+
+Start the server (console server, default port 12345):
+
+    java Server
+
+Start the server GUI (prompts for server name):
+
+    java ServerGUI
+
+Start a client (GUI):
+
+    java ChatClient
+
+Optional diagnostic client (headless):
+
+    java TestClient
+
+5) Useful run scenarios
+------------------------------------------------
+- Run server in one terminal (or on a machine that acts as server) and run multiple clients
+  (each in a separate terminal or as separate app windows) connecting to that server's host and port.
+- To pass a custom port to the console Server:
+
+    java Server 23456
+
+6) Where logs and history are stored
+------------------------------------------------
+- Server writes an append-only history file named `server_chat_history.txt` in the working directory.
+- Each client writes a local history file named `<username>_history.txt` in the working directory.
+- If DB logging is enabled, messages are also saved (see `DBHelper.java`).
+
+7) Troubleshooting
+------------------------------------------------
+- If `javac` or `java` are not found after installing JDK, double-check JAVA_HOME and PATH.
+- If a client cannot connect, ensure the server printed:
+    [Server]: Listening on port 12345
+  and that the port (firewall) is open and host/port are correct.
+- If you see duplicate messages, confirm you are running only one copy of each client and the client no longer locally echoes messages.
+- If authentication to MySQL fails, check credentials and that the JDBC driver jar is on the server classpath.
+
+8) Optional: quick launch scripts (Windows PowerShell)
+------------------------------------------------
+Create `run-server.ps1`:
+
+    cd 'D:\App projects\Chat App\java-chat-app'
+    java ServerGUI
+
+Create `run-client.ps1`:
+
+    cd 'D:\App projects\Chat App\java-chat-app'
+    java ChatClient
+
+9) Packaging (optional)
+------------------------------------------------
+- If you want a single runnable JAR so your friend doesn't need to compile, I can add a small Gradle script or produce JARs on request.
+
+Contact / Notes
+------------------------------------------------
+- If your friend hits any errors, have them copy the terminal output and send it (stack traces, exact messages). I can help debug quickly.
+
+End of installation instructions.
